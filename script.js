@@ -4,7 +4,7 @@ var csv = require('csv-parser');
 var fs = require('fs');
 
 var app = express();
-var PORT = 3001
+var PORT = process.env.PORT || 3001
 
 // Allow all in CORS
 app.use(function(req, res, next) {
