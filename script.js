@@ -57,7 +57,7 @@ app.get('/url', (req, res) => {
 
 //  Opening server for the world (0.0.0.0)
 app.listen(PORT, '0.0.0.0', () => {
- console.log(`Server running on port ${PORT}`);
+// console.log(`Server running on port ${PORT}`);
 });
 
 
