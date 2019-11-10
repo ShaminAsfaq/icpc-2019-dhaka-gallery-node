@@ -15,6 +15,8 @@ app.use(function(req, res, next) {
 
 
 var list = [];
+var map = {};
+
 app.get('/', (req, res) => {
 
 	if(list.length===0){
@@ -30,24 +32,69 @@ app.get('/', (req, res) => {
 		    var c3_name = 'Name of contestant 3';
 		    var cm_id = 'CM ID';
 
-		    list.push({
-		        institute: data[institute],
-		        team_name: data[team_name],
-		        coach_name: data[coach_name],
-		        c1_name: data[c1_name],
-		        c2_name: data[c2_name],
-		        c3_name: data[c3_name],
-		        cm_id: data[cm_id]
-		    });
+			if(map[data[team_name]]===undefined) {
+				map[data[team_name]] = true;
+				list.push({
+					institute: data[institute],
+					team_name: data[team_name],
+					coach_name: data[coach_name],
+					c1_name: data[c1_name],
+					c2_name: data[c2_name],
+					c3_name: data[c3_name],
+					cm_id: data[cm_id]
+				});
+			} else {
+				console.log('#1. Found team is:', data[team_name])
+			}
 		})
-		.on('end', () => {
-
-		    list = list.sort((a,b) => {
-		        return a.institute > b.institute ? 1 : -1
-		    });
-
-		    res.send(list);
+		.on('end', () => {		   
 		});
+
+		fs.createReadStream('teams-with-no-photo.csv')
+			.pipe(csv())
+			.on('data', (data) => {
+				
+				var institute = 'institution';
+				var team_name = 'team_name';
+				var coach_name = 'coach_name';
+				var c1_name = 'contestant1_name';
+				var c2_name = 'contestant2_name';
+				var c3_name = 'contestant3_name';
+				var cm_id = 'username';
+
+				if(map[data[team_name]]===undefined){
+					map[data[team_name]] = true;				
+
+					list.push({
+						institute: data[institute],
+						team_name: data[team_name],
+						coach_name: data[coach_name],
+						c1_name: data[c1_name],
+						c2_name: data[c2_name],
+						c3_name: data[c3_name],
+						cm_id: data[cm_id]
+					});
+				} else {
+					console.log('#2. Found team is:', data[team_name])
+				}
+			})
+			.on('end', () => {
+				
+				list = list.sort((a,b) => {
+					return a.institute > b.institute ? 1 : -1
+				});
+				res.send(list);
+				
+
+				// console.log(list.filter((team, idx) => {
+				// 	if(team.institute != idx.institute)
+				// 		return true;
+				// 	else return false;
+				// }))
+				
+				// console.log(list)
+			})
+
     } else {
 		res.send(list)
 	}
